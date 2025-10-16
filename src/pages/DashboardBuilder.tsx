@@ -120,7 +120,10 @@ const DashboardBuilder = () => {
     toast.success('Dashboard saved successfully');
   };
 
-  const handleEditWidget = (widgetId: string) => {
+  const handleEditWidget = (widgetId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setEditingWidgetId(widgetId);
     setIsEditSheetOpen(true);
   };
@@ -237,12 +240,14 @@ const DashboardBuilder = () => {
               preventCollision={false}
             >
               {dashboardWidgets.map(({ dashboardWidget, widget }) => (
-                <div key={dashboardWidget.i} className="bg-background rounded-lg shadow-sm">
-                  <WidgetPreview
-                    widget={widget!}
-                    onEdit={() => handleEditWidget(widget!.id)}
-                    showEditButton={true}
-                  />
+                <div key={dashboardWidget.i} className="bg-background rounded-lg shadow-sm pointer-events-none">
+                  <div className="pointer-events-auto">
+                    <WidgetPreview
+                      widget={widget!}
+                      onEdit={(e) => handleEditWidget(widget!.id, e)}
+                      showEditButton={true}
+                    />
+                  </div>
                 </div>
               ))}
             </GridLayout>
@@ -260,7 +265,10 @@ const DashboardBuilder = () => {
             <WidgetForm
               initialConfig={widgets.find((w) => w.id === editingWidgetId)?.config}
               onSave={(config) => {
-                // Handle widget config update
+                dispatch({
+                  type: 'widgets/updateWidget',
+                  payload: { id: editingWidgetId, config }
+                });
                 setIsEditSheetOpen(false);
                 setEditingWidgetId(null);
                 toast.success('Widget configuration updated');

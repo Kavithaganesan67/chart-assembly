@@ -46,6 +46,28 @@ const dashboardSlice = createSlice({
         );
       }
     },
+    loadDashboard: (state, action: PayloadAction<string>) => {
+      const dashboard = state.dashboards.find(d => d.id === action.payload);
+      if (dashboard) {
+        state.currentDashboard = dashboard;
+      }
+    },
+    createNewDashboard: (state, action: PayloadAction<string>) => {
+      const newDashboard: Dashboard = {
+        id: Date.now().toString(),
+        name: action.payload,
+        widgets: [],
+        createdAt: new Date().toISOString(),
+      };
+      state.currentDashboard = newDashboard;
+    },
+    deleteDashboard: (state, action: PayloadAction<string>) => {
+      state.dashboards = state.dashboards.filter(d => d.id !== action.payload);
+      localStorage.setItem('dashboards', JSON.stringify(state.dashboards));
+      if (state.currentDashboard?.id === action.payload) {
+        state.currentDashboard = null;
+      }
+    },
   },
 });
 
@@ -55,5 +77,8 @@ export const {
   saveDashboard,
   addWidgetToDashboard,
   removeWidgetFromDashboard,
+  loadDashboard,
+  createNewDashboard,
+  deleteDashboard,
 } = dashboardSlice.actions;
 export default dashboardSlice.reducer;

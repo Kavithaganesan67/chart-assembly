@@ -21,7 +21,7 @@ import {
 
 interface WidgetPreviewProps {
   widget: Widget;
-  onEdit?: () => void;
+  onEdit?: (e?: React.MouseEvent) => void;
   showEditButton?: boolean;
 }
 
@@ -135,8 +135,11 @@ export const WidgetPreview = ({ widget, onEdit, showEditButton = false }: Widget
         </div>
         {showEditButton && onEdit && (
           <button
-            onClick={onEdit}
-            className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(e);
+            }}
+            className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 cursor-pointer z-10"
           >
             Edit
           </button>
